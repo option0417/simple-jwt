@@ -1,20 +1,21 @@
 package tw.com.wd.jwt;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 
 public class JwtPayload {
-    @SerializedName("iss")
+    @SerializedName("userid")
     private String issuer;
 
-    @SerializedName("exp")
-    private long expireTimestamp;
+    @SerializedName("username")
+    private String expireTimestamp;
 
-    @SerializedName("\"http://example.com/is_root\":true")
-    private boolean isRoot;
+    //@SerializedName("\"http://example.com/is_root\":true")
+    private transient boolean isRoot;
 
 
-    public JwtPayload(String issuer, long expireTimestamp) {
+    public JwtPayload(String issuer, String expireTimestamp) {
         super();
         this.issuer = issuer;
         this.expireTimestamp = expireTimestamp;
@@ -24,7 +25,7 @@ public class JwtPayload {
         return issuer;
     }
 
-    public long getExpireTimestamp() {
+    public String getExpireTimestamp() {
         return expireTimestamp;
     }
 
@@ -34,5 +35,11 @@ public class JwtPayload {
 
     public void setRoot(boolean root) {
         isRoot = root;
+    }
+
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this, JwtPayload.class);
     }
 }

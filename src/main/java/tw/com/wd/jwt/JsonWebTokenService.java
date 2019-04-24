@@ -3,13 +3,34 @@ package tw.com.wd.jwt;
 import java.io.UnsupportedEncodingException;
 
 
-public class JsonWebTokenService {
+public class JsonWebTokenService implements IJsonWebTokenService {
     private static final byte[] SECURET_KEY = Jwk.getJwk();
     private static final String REGEX_DOT = "\\.";
     private static final String DOT = ".";
     private static final int HEADER_PART = 0;
     private static final int PAYLOAD_PART = 1;
     private static final int SIGNATURE_PART = 2;
+
+    public String buildToken(JwtHeader jwtHeader, JwtPayload jwtPayload) {
+        String base64JwtHeader = Base64Util.toBase64(jwtHeader.toString().getBytes());
+        String base64JwtPayload = Base64Util.toBase64(jwtPayload.toString().getBytes());
+
+
+
+        String jwtData = base64JwtHeader + DOT + base64JwtPayload;
+        byte[] jwtDataBytes = null;
+        try {
+            jwtDataBytes = jwtData.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            jwtDataBytes = jwtData.getBytes();
+        }
+
+        byte[] hmacBytes = HMacUtil.calHMac(jwtDataBytes, SECURET_KEY);
+        String base64HMac = Base64Util.toBase64(hmacBytes);
+
+        return jwtData + DOT + base64HMac;
+    }
 
     public boolean isValidToken(String jwtString) {
         // Check format
@@ -23,9 +44,6 @@ public class JsonWebTokenService {
             System.err.printf("JWT with wrong format\n");
             return false;
         }
-
-        // Convert to object of JsonWebToken
-        //JsonWebToken jsonWebToken = toJsonWebToken(jwtParts);
 
         return verify(jwtParts);
     }
@@ -47,12 +65,5 @@ public class JsonWebTokenService {
         String base64HMac = Base64Util.toBase64(hmacBytes);
 
         return jwtParts[SIGNATURE_PART].equals(base64HMac);
-    }
-
-    private JsonWebToken toJsonWebToken(String[] jwtParts) {
-        //JsonWebToken jsonWebToken = new JsonWebToken();
-
-
-        return null;
     }
 }

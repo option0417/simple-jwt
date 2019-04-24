@@ -1,5 +1,6 @@
 package tw.com.wd.jwt;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 
@@ -22,5 +23,10 @@ public class JwtHeader {
 
     public String getAlgorithm() {
         return algorithm;
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this, JwtHeader.class);
     }
 }
